@@ -92,6 +92,12 @@ export default defineComponent({
       '8': '#2CE874',
       '9': '#673574',
       '10': '#D46552',
+      '11': '#8D99DD',
+      '12': '#74F351',
+      '13': '#A77181',
+      '14': '#BAC436',
+      '15': '#5F0F47',
+      '16': '#D46552'
       // dodaj więcej kategorii i kolorów
     };
 
@@ -109,6 +115,9 @@ export default defineComponent({
       '11': 'Pensja',
       '12': 'Prezent',
       '13': 'Zasiłek',
+      '14': 'Premia',
+      '15': 'Biznes',
+      '16': 'Inne'
       // dodaj więcej kategorii
     };
     const deleteTransaction = async (transactionId, type) => {

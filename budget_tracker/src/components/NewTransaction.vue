@@ -50,6 +50,9 @@ export default defineComponent({
                 { id: 11, name: 'Pensja' },
                 { id: 12, name: 'Prezent' },
                 { id: 13, name: 'Zasiłek' },
+                { id: 14, name: 'Premia' },
+                { id: 15, name: 'Biznes' },
+                { id: 16, name: 'Inne' },
                 // Możesz dodać więcej kategorii przychodów tutaj
             ],
             expenseCategories: [
