@@ -20,9 +20,9 @@
 
 <script>
 import { getAuth } from 'firebase/auth';
-import { updateNotificationSettings } from '../firebase/firebase'; // Importuj funkcję zapisującą ustawienia powiadomień
 import { defineComponent } from 'vue';
 import { useRouter } from 'vue-router';
+import { doc, getFirestore, setDoc } from 'firebase/firestore';
 
 export default defineComponent({
     name: 'SettingsPage',
@@ -53,13 +53,18 @@ export default defineComponent({
     methods: {
         async saveNotificationSettings() {
             try {
-                // Aktualizacja ustawień powiadomień w bazie danych lub innym magazynie danych
-                // Tutaj użyjemy przykładowej funkcji updateNotificationSettings
-                await updateNotificationSettings(this.notificationsEnabled);
-                // Powiadomienie użytkownika o zapisaniu ustawień
-                alert('Ustawienia powiadomień zostały zapisane.');
+                const auth = getAuth();
+                const user = auth.currentUser;
+                if (user) {
+                    const userId = user.uid;
+                    const db = getFirestore();
+                    const userDocRef = doc(db, `userSettings/${userId}`);
+                    await setDoc(userDocRef, { notificationsEnabled: this.notificationsEnabled }, { merge: true });
+                    alert('Ustawienia powiadomień zostały zapisane.');
+                } else {
+                    throw new Error('User not authenticated');
+                }
             } catch (error) {
-                // Obsługa błędu zapisu ustawień powiadomień
                 console.error('Błąd podczas zapisywania ustawień powiadomień:', error);
                 alert('Wystąpił błąd podczas zapisywania ustawień powiadomień. Spróbuj ponownie później.');
             }
@@ -69,5 +74,21 @@ export default defineComponent({
 </script>
 
 <style scoped>
-/* Dodaj style dla strony ustawień */
+.settings-page {
+    text-align: center;
+    padding: 20px;
+}
+
+button {
+    display: block;
+    margin: 10px auto;
+    padding: 10px 20px;
+    background-color: #f0f0f0;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #e0e0e0;
+}
 </style>
