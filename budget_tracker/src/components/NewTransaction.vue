@@ -3,7 +3,7 @@
         <h2>Dodaj nową transakcję</h2>
         <form @submit.prevent="addTransaction">
         <!-- Pola formularza: kwota, data, kategoria, opis, zdjęcie: -->
-            <select v-model="transactionType" required>
+            <select v-model="transactionType" required @change="updateCategories">
                 <option value="">Wybierz typ</option>
                 <!-- Lista opcji typów -->
                 <option value="income">Przychód</option>
@@ -20,7 +20,7 @@
             <select v-model="category" required>
                 <option value="">Wybierz kategorię</option>
                 <!-- Lista opcji kategorii -->
-                <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name }}</option>
+                <option v-for="category in currentCategories" :key="category.id" :value="category.id">{{ category.name }}</option>
             </select>
 
             <!-- Pole opisu -->
@@ -46,7 +46,13 @@ export default defineComponent({
     name: 'NewTransaction',
     data() {
         return {
-            categories: [
+            incomeCategories: [
+                { id: 11, name: 'Pensja' },
+                { id: 12, name: 'Prezent' },
+                { id: 13, name: 'Zasiłek' },
+                // Możesz dodać więcej kategorii przychodów tutaj
+            ],
+            expenseCategories: [
                 { id: 1, name: 'Jedzenie' },
                 { id: 2, name: 'Rozrywka' },
                 { id: 3, name: 'Transport' },
@@ -59,6 +65,7 @@ export default defineComponent({
                 { id: 10, name: 'Inne' },
                 
             ],
+            currentCategories: [],
             transactionType: '', // Typ transakcji
             amount: null,
             date: this.getCurrentDate(),
@@ -78,6 +85,15 @@ export default defineComponent({
         },
         handleFileUpload(event) {
             this.receiptImage = event.target.files[0];
+        },
+        updateCategories() {
+            if (this.transactionType === 'income') {
+                this.currentCategories = this.incomeCategories;
+            } else if (this.transactionType === 'expense') {
+                this.currentCategories = this.expenseCategories;
+            } else {
+                this.currentCategories = [];
+            }
         },
         async addTransaction() {
             // Walidacja typu transakcji
@@ -128,7 +144,7 @@ export default defineComponent({
                 // Zresetowanie pól formularza po pomyślnym dodaniu transakcji
                 this.transactionType = '';
                 this.amount = null;
-                this.date = '';
+                this.date = this.getCurrentDate();
                 this.category = '';
                 this.description = '';
                 this.receiptImage = null;

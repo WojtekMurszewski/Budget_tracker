@@ -106,6 +106,9 @@ export default defineComponent({
       '8': 'Edukacja',
       '9': 'Prezent',
       '10': 'Inne',
+      '11': 'Pensja',
+      '12': 'Prezent',
+      '13': 'Zasiłek',
       // dodaj więcej kategorii
     };
     const deleteTransaction = async (transactionId, type) => {
