@@ -58,7 +58,7 @@
         "type": "image/png"
       }
     ],
-    "start_url": "/",
+    "start_url": "/signin-signup",
     "display": "standalone",
     "background_color": "#ffffff",
     "theme_color": "#ffffff"

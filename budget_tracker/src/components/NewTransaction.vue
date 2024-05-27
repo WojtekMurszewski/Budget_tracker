@@ -36,37 +36,49 @@
 </template>
 
 <script>
-import { collection, addDoc, initializeFirestore } from 'firebase/firestore';
+import { collection, addDoc } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'; // Dodaj import storage
-import { initializeApp } from 'firebase/app'; // Dodaj import initializeApp
-import { appFirebase } from '../main.js';
+import { db } from '../firebase/firebase';
+import { getAuth } from 'firebase/auth';
+import { defineComponent } from 'vue';
 
-export default {
+export default defineComponent({
     name: 'NewTransaction',
     data() {
         return {
-            categories: [],
+            categories: [
+                { id: 1, name: 'Jedzenie' },
+                { id: 2, name: 'Rozrywka' },
+                { id: 3, name: 'Transport' },
+                { id: 4, name: 'Zdrowie' },
+                { id: 5, name: 'Dom' },
+                { id: 6, name: 'Ubrania' },
+                { id: 7, name: 'Uroda' },
+                { id: 8, name: 'Edukacja' },
+                { id: 9, name: 'Prezent' },
+                { id: 10, name: 'Inne' },
+                
+            ],
             transactionType: '', // Typ transakcji
             amount: null,
-            date: '',
+            date: this.getCurrentDate(),
             category: '',
             description: '',
             receiptImage: null
         };
     },
-    created() {
-        const firebaseConfig = {
-            apiKey: "AIzaSyCGGF8s-eq99d4-WPS_greT54y17sHorFo",
-            authDomain: "project-psm-b0980.firebaseapp.com",
-            projectId: "project-psm-b0980",
-            storageBucket: "project-psm-b0980.appspot.com",
-            messagingSenderId: "166483875752",
-            appId: "1:166483875752:web:97c02ddf19977412ed2f9d"
-        };
-        const appFirebase = initializeApp(firebaseConfig);
-        this.db = initializeFirestore(appFirebase); // Przypisanie instancji Firestore do pola db
-    },
     methods: {
+        getCurrentDate() {
+            // Pobranie bieżącej daty w formacie YYYY-MM-DD
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0'); // Miesiące są zero-indexowane
+            const day = String(today.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        },
+        handleFileUpload(event) {
+            this.receiptImage = event.target.files[0];
+        },
         async addTransaction() {
             // Walidacja typu transakcji
             if (!this.transactionType) {
@@ -89,11 +101,17 @@ export default {
                 const storageRef = ref(storage, this.receiptImage.name); // Utworzenie referencji do pliku
                 await uploadBytes(storageRef, this.receiptImage); // Przesłanie danych binarnych do Firebase Storage
 
+
                 // Pobierz adres URL przesłanego zdjęcia
                 imageUrl = await getDownloadURL(storageRef);
             }
-
             try {
+                const auth = getAuth(); // Pobieramy obiekt autentykacji
+                const user = auth.currentUser; // Pobieramy bieżącego użytkownika
+                if (!user) {
+                    throw new Error('Użytkownik niezalogowany');
+                }
+                const userId = user.uid;
                 // Przygotowanie danych transakcji
                 const transactionData = {
                     type: this.transactionType,
@@ -103,9 +121,9 @@ export default {
                     description: this.description,
                     receiptImage: imageUrl
                 };
-                const db = initializeFirestore(appFirebase);
+
                 // Dodanie transakcji do kolekcji 'transactions' w bazie danych Firestore
-                await addDoc(collection(db, 'transactions'), transactionData);
+                await addDoc(collection(db, `users/${userId}/transactions`), transactionData);
 
                 // Zresetowanie pól formularza po pomyślnym dodaniu transakcji
                 this.transactionType = '';
@@ -126,9 +144,52 @@ export default {
             }
         }
     }
-};
+});
 </script>
 
 <style scoped>
-/* Dodaj style dla formularza */
+.new-transaction {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 1rem;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.new-transaction h2 {
+    text-align: center;
+    color: #333;
+}
+
+.new-transaction form {
+    display: flex;
+    flex-direction: column;
+}
+
+.new-transaction select,
+.new-transaction input,
+.new-transaction textarea {
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.new-transaction button {
+    padding: 0.75rem;
+    font-size: 1rem;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.new-transaction button:hover {
+    background-color: #0056b3;
+}
 </style>

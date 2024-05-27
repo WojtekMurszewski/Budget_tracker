@@ -19,15 +19,35 @@
 </template>
 
 <script>
-import { useRouter } from 'vue-router';
 import { getAuth } from 'firebase/auth';
-import { updateNotificationSettings } from '@/firebase/firebase.js'; // Importuj funkcję zapisującą ustawienia powiadomień
+import { updateNotificationSettings } from '../firebase/firebase'; // Importuj funkcję zapisującą ustawienia powiadomień
+import { defineComponent } from 'vue';
+import { useRouter } from 'vue-router';
 
-export default {
+export default defineComponent({
     name: 'SettingsPage',
     data() {
         return {
             notificationsEnabled: false // Domyślnie powiadomienia są wyłączone
+        };
+    },
+    setup() {
+        const router = useRouter();
+        const logout = async () => {
+            try {
+                // Wylogowanie użytkownika
+                await getAuth().signOut(); // Wylogowanie z Firebase Authentication
+                // Po wylogowaniu przekieruj użytkownika na stronę logowania
+                router.push('/');
+            } catch (error) {
+                // Obsługa błędu wylogowania
+                console.error('Błąd podczas wylogowywania użytkownika:', error);
+                alert('Wystąpił błąd podczas wylogowywania użytkownika. Spróbuj ponownie później.');
+            }
+        };
+
+        return {
+            logout
         };
     },
     methods: {
@@ -43,22 +63,9 @@ export default {
                 console.error('Błąd podczas zapisywania ustawień powiadomień:', error);
                 alert('Wystąpił błąd podczas zapisywania ustawień powiadomień. Spróbuj ponownie później.');
             }
-        },
-        async logout() {
-            try {
-                // Wylogowanie użytkownika
-                await getAuth.signOut(); // Wylogowanie z Firebase Authentication
-                const router = useRouter();
-                // Po wylogowaniu przekieruj użytkownika na stronę logowania
-                router.push('/login');
-            } catch (error) {
-                // Obsługa błędu wylogowania
-                console.error('Błąd podczas wylogowywania użytkownika:', error);
-                alert('Wystąpił błąd podczas wylogowywania użytkownika. Spróbuj ponownie później.');
-            }
         }
     }
-};
+});
 </script>
 
 <style scoped>
