@@ -20,19 +20,75 @@
 
 <script>
 import { getAuth } from 'firebase/auth';
-import { updateNotificationSettings } from '../firebase/firebase'; // Importuj funkcję zapisującą ustawienia powiadomień
-import { defineComponent } from 'vue';
+import { doc, getFirestore, setDoc, getDoc } from 'firebase/firestore';
+import { defineComponent, ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { getToken } from 'firebase/messaging';
+import { messaging } from '../firebase/firebase';
 
 export default defineComponent({
     name: 'SettingsPage',
-    data() {
-        return {
-            notificationsEnabled: false // Domyślnie powiadomienia są wyłączone
-        };
-    },
     setup() {
+        const notificationsEnabled = ref(false);
         const router = useRouter();
+        const db = getFirestore();
+
+        const fetchNotificationSettings = async () => {
+            try {
+                const auth = getAuth();
+                const user = auth.currentUser;
+                if (user) {
+                    const userId = user.uid;
+                    const userSettingsDocRef = doc(db, `userSettings/${userId}`);
+                    const docSnap = await getDoc(userSettingsDocRef);
+                    if (docSnap.exists()) {
+                        notificationsEnabled.value = docSnap.data().notificationsEnabled;
+                    }
+                } else {
+                    throw new Error('User not authenticated');
+                }
+            } catch (error) {
+                console.error('Błąd podczas pobierania ustawień powiadomień:', error);
+            }
+        };
+
+        const saveNotificationSettings = async () => {
+            try {
+                const auth = getAuth();
+                const user = auth.currentUser;
+                if (user) {
+                const userId = user.uid;
+                const userSettingsDocRef = doc(db, `userSettings/${userId}`);
+                await setDoc(userSettingsDocRef, { notificationsEnabled: notificationsEnabled.value }, { merge: true });
+
+                if (notificationsEnabled.value) {
+                    try {
+                        // Pobierz token FCM i zapisz go do Firestore
+                        console.log('Uzyskiwanie tokenu FCM...');
+                        const token = await getToken(messaging, { vapidKey: 'BAESoy7uoW7QJOca2ECJOYXO9l9IRKRxI59mGKUzS5FsfOl6_BTkznxlgaezEP9kP8z0WT5a_hl8MMF12jZRGZ4' });
+                        console.log('Token FCM uzyskany:', token);
+                        await setDoc(userSettingsDocRef, { fcmToken: token }, { merge: true });
+                        console.log('Token FCM zapisany w Firestore');
+                        } catch (tokenError) {
+                        console.error('Błąd podczas uzyskiwania tokenu FCM:', tokenError);
+                        throw new Error('Błąd podczas uzyskiwania tokenu FCM');
+                        }
+                    } else {
+                        // Usuń token FCM, jeśli powiadomienia są wyłączone
+                        await setDoc(userSettingsDocRef, { fcmToken: null }, { merge: true });
+                    }
+
+                alert('Ustawienia powiadomień zostały zapisane.');
+                } else {
+                throw new Error('User not authenticated');
+                }
+            } catch (error) {
+                console.error('Błąd podczas zapisywania ustawień powiadomień:', error);
+                alert('Wystąpił błąd podczas zapisywania ustawień powiadomień. Spróbuj ponownie później.');
+            }
+};
+
+
         const logout = async () => {
             try {
                 // Wylogowanie użytkownika
@@ -46,28 +102,35 @@ export default defineComponent({
             }
         };
 
+        onMounted(() => {
+            fetchNotificationSettings();
+        });
+
         return {
+            notificationsEnabled,
+            saveNotificationSettings,
             logout
         };
-    },
-    methods: {
-        async saveNotificationSettings() {
-            try {
-                // Aktualizacja ustawień powiadomień w bazie danych lub innym magazynie danych
-                // Tutaj użyjemy przykładowej funkcji updateNotificationSettings
-                await updateNotificationSettings(this.notificationsEnabled);
-                // Powiadomienie użytkownika o zapisaniu ustawień
-                alert('Ustawienia powiadomień zostały zapisane.');
-            } catch (error) {
-                // Obsługa błędu zapisu ustawień powiadomień
-                console.error('Błąd podczas zapisywania ustawień powiadomień:', error);
-                alert('Wystąpił błąd podczas zapisywania ustawień powiadomień. Spróbuj ponownie później.');
-            }
-        }
     }
 });
 </script>
 
 <style scoped>
-/* Dodaj style dla strony ustawień */
+.settings-page {
+    text-align: center;
+    padding: 20px;
+}
+
+button {
+    display: block;
+    margin: 10px auto;
+    padding: 10px 20px;
+    background-color: #f0f0f0;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #e0e0e0;
+}
 </style>

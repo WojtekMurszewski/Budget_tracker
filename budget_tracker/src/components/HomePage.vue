@@ -1,44 +1,51 @@
 <template>
-    <div class="cashflow content">
-      <h2>Miesięczne podsumowanie transakcji</h2>
-      <div class="charts-container">
-        <div class="chart-wrapper">
-          <h3>Przychody:</h3>
-          <PieChart v-if="incomeTransactions.length" :data="incomeChartData" :options="chartOptions" />
-          <p v-else>Brak transakcji przychodów</p>
-        </div>
-        <div class="chart-wrapper">
-          <h3>Wydatki:</h3>
-          <PieChart v-if="expenseTransactions.length" :data="expenseChartData" :options="chartOptions" />
-          <p v-else>Brak transakcji wydatków</p>
-        </div>
+  <div class="cashflow content">
+    <h2>Miesięczne podsumowanie transakcji</h2>
+    <div class="charts-container">
+      <div class="chart-wrapper">
+        <h3>Przychody:</h3>
+        <PieChart v-if="incomeTransactions.length" :data="incomeChartData" :options="chartOptions" />
+        <p v-else>Brak transakcji przychodów</p>
       </div>
-      <div class="transactions-container">
-        <div>
-          <h3>Przychody:</h3>
-          <ul>
-            <li v-for="transaction in incomeTransactions" :key="transaction.id">
-                {{ transaction.date }} {{ getCategoryName(transaction.category) }} {{ transaction.amount }}zł {{ transaction.description }}
-                <button @click="deleteTransaction(transaction.id, 'income')">Usuń</button>
-                
-            </li>
-          </ul>
-        </div>
-        <div>
-          <h3>Wydatki:</h3>
-          <ul>
-            <li v-for="transaction in expenseTransactions" :key="transaction.id">
-                {{ transaction.date }} {{ getCategoryName(transaction.category) }} {{ transaction.amount }}zł {{ transaction.description }}
-                <button @click="deleteTransaction(transaction.id, 'expense')">Usuń</button>
-            </li>
-          </ul>
-        </div>
+      <div class="chart-wrapper">
+        <h3>Wydatki:</h3>
+        <PieChart v-if="expenseTransactions.length" :data="expenseChartData" :options="chartOptions" />
+        <p v-else>Brak transakcji wydatków</p>
       </div>
     </div>
-  </template>
-  
+    <div class="transactions-container">
+      <div>
+        <h3>Przychody:</h3>
+        <ul>
+          <li v-for="transaction in incomeTransactions" :key="transaction.id">
+            {{ transaction.date }} {{ getCategoryName(transaction.category) }} {{ transaction.amount }}zł {{ transaction.description }}
+            <img v-if="transaction.receiptImage" :src="transaction.receiptImage" @click="showImage(transaction.receiptImage)" class="receipt-image" />
+            <button @click="deleteTransaction(transaction.id, 'income')">Usuń</button>
+          </li>
+        </ul>
+      </div>
+      <div>
+        <h3>Wydatki:</h3>
+        <ul>
+          <li v-for="transaction in expenseTransactions" :key="transaction.id">
+            {{ transaction.date }} {{ getCategoryName(transaction.category) }} {{ transaction.amount }}zł {{ transaction.description }}
+            <img v-if="transaction.receiptImage" :src="transaction.receiptImage" @click="showImage(transaction.receiptImage)" class="receipt-image" />
+            <button @click="deleteTransaction(transaction.id, 'expense')">Usuń</button>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Modalne okno do wyświetlania powiększonego zdjęcia -->
+    <div v-if="showModal" class="modal" @click="closeModal">
+      <span class="close">&times;</span>
+      <img class="modal-content" :src="modalImage">
+    </div>
+  </div>
+</template>
+
 <script>
-import { defineComponent, ref, onMounted  } from 'vue';
+import { defineComponent, ref, onMounted } from 'vue';
 import { collection, getDocs, doc, deleteDoc } from "firebase/firestore";
 import { db } from '../firebase/firebase';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
@@ -81,6 +88,9 @@ export default defineComponent({
       },
     });
 
+    const showModal = ref(false);
+    const modalImage = ref('');
+
     const categoryColors = {
       '1': '#FF6384',
       '2': '#36A2EB',
@@ -92,6 +102,12 @@ export default defineComponent({
       '8': '#2CE874',
       '9': '#673574',
       '10': '#D46552',
+      '11': '#8D99DD',
+      '12': '#74F351',
+      '13': '#A77181',
+      '14': '#BAC436',
+      '15': '#5F0F47',
+      '16': '#D46552'
       // dodaj więcej kategorii i kolorów
     };
 
@@ -106,8 +122,15 @@ export default defineComponent({
       '8': 'Edukacja',
       '9': 'Prezent',
       '10': 'Inne',
+      '11': 'Pensja',
+      '12': 'Prezent',
+      '13': 'Zasiłek',
+      '14': 'Premia',
+      '15': 'Biznes',
+      '16': 'Inne'
       // dodaj więcej kategorii
     };
+
     const deleteTransaction = async (transactionId, type) => {
       try {
         const user = getAuth().currentUser;
@@ -177,29 +200,52 @@ export default defineComponent({
                     data: Object.values(expenseCategoryData),
                     },
                 ],
-                };
-            } catch (error) {
-                console.error('Error fetching transactions:', error);
-            }
             };
+        } catch (error) {
+            console.error('Error fetching transactions:', error);
+        }
+    };
 
+    const showImage = (imageUrl) => {
+      modalImage.value = imageUrl;
+      showModal.value = true;
+    };
 
-            onMounted(() => {
-                const auth = getAuth();
-                onAuthStateChanged(auth, (user) => {
-                    if (user) {
-                    setTimeout(() => {
-                        fetchTransactions(user.uid);
-                    }, 300); // Opóźnienie, aby upewnić się, że komponenty są w pełni załadowane
-                }
-            });
-        });
+    const closeModal = () => {
+      showModal.value = false;
+      modalImage.value = '';
+    };
 
-        return { incomeTransactions, expenseTransactions, incomeChartData, expenseChartData, chartOptions, getCategoryName, deleteTransaction  };
-    }
+    onMounted(() => {
+      const auth = getAuth();
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          setTimeout(() => {
+            fetchTransactions(user.uid);
+          }, 300); // Opóźnienie, aby upewnić się, że komponenty są w pełni załadowane
+        }
+      });
+    });
+
+    return {
+      incomeTransactions,
+      expenseTransactions,
+      incomeChartData,
+      expenseChartData,
+      chartOptions,
+      getCategoryName,
+      deleteTransaction,
+      showModal,
+      modalImage,
+      showImage,
+      closeModal
+    };
+  }
 });
 </script>
 
+### CSS
+```css
 <style scoped>
 .content {
   padding: 20px;
@@ -216,16 +262,16 @@ export default defineComponent({
 }
 
 .chart-wrapper {
-  width: 45%; 
-  max-width: 400px; 
-  height: 300px; 
+  width: 45%;
+  max-width: 400px;
+  height: 300px;
   margin: 10px;
   text-align: center;
   position: relative;
 }
 
 .chart-wrapper h3 {
-    margin-top: 5px;
+  margin-top: 5px;
   margin-bottom: 0;
 }
 
@@ -242,9 +288,45 @@ export default defineComponent({
 }
 
 .transactions-container > div {
-  width: 45%; 
-  max-width: 400px; 
+  width: 45%;
+  max-width: 400px;
   margin: 10px;
+}
+
+.receipt-image {
+  display: block;
+  margin: 10px auto;
+  max-width: 60%;
+  cursor: pointer;
+}
+
+.modal {
+  display: flex;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.9);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  max-width: 90%;
+  max-height: 90%;
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 25px;
+  color: #fff;
+  font-size: 35px;
+  font-weight: bold;
+  cursor: pointer;
 }
 
 @media (max-width: 768px) {
