@@ -27,7 +27,7 @@ import { getToken } from 'firebase/messaging';
 import { messaging } from '../firebase/firebase';
 
 // Rejestracja Service Worker
-navigator.serviceWorker.register('/Project-PSM/budget_tracker/firebase-messaging-sw.js')
+navigator.serviceWorker.register('/budget_tracker/firebase-messaging-sw.js')
   .then((registration) => {
     messaging.useServiceWorker(registration);
     console.log('Service Worker registered successfully');
