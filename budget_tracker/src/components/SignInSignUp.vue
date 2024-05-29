@@ -144,7 +144,7 @@ input[type="password"] {
 }
 
 button {
-  width: calc(100% - 22px); /* 22px to uwzględniają marginesy i paddingi */
+  width: calc(100% - 22px); 
   padding: 10px;
   margin-bottom: 10px;
   border: none;
