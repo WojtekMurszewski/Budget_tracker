@@ -26,14 +26,15 @@ import { useRouter } from 'vue-router';
 import { getToken } from 'firebase/messaging';
 import { messaging } from '../firebase/firebase';
 
-// Rejestracja Service Worker
-navigator.serviceWorker.register('/budget_tracker/firebase-messaging-sw.js')
-  .then((registration) => {
-    messaging.useServiceWorker(registration);
-    console.log('Service Worker registered successfully');
-  }).catch((err) => {
-    console.error('Service Worker registration failed', err);
-  });
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/firebase-messaging-sw.js')
+    .then((registration) => {
+      console.log('Service Worker registered with scope:', registration.scope);
+    }).catch((err) => {
+      console.error('Service Worker registration failed:', err);
+    });
+}
+
 
 export default defineComponent({
     name: 'SettingsPage',
