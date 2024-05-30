@@ -34,7 +34,7 @@ const requestNotificationPermission = async () => {
     if (permission === 'granted') {
       console.log("Notification permission granted.");
 
-      const currentToken = await getToken(messaging, { vapidKey: 'BAESoy7uoW7QJOca2ECJOYXO9l9IRKRxI59mGKUzS5FsfOl6_BTkznxlgaezEP9kP8z0WT5a_hl8MMF12jZRGZ4' });
+      const currentToken = await getToken(messaging, { vapidKey: 'BPxGe-PhrQrXYah0TOYjmrahIUAoh5Sp8KdKWs5JqY1Yh_Jw_KlloOeOOkEzIwrj8jpAq6S6UZooXupZcRifGqY' });
       if (currentToken) {
         console.log("FCM Token:", currentToken);
         saveFcmToken(currentToken); // Save the token to Firestore

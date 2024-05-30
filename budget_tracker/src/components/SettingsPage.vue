@@ -75,7 +75,7 @@ export default defineComponent({
                     try {
                         // Pobierz token FCM i zapisz go do Firestore
                         console.log('Uzyskiwanie tokenu FCM...');
-                        const token = await getToken(messaging, { vapidKey: 'BAESoy7uoW7QJOca2ECJOYXO9l9IRKRxI59mGKUzS5FsfOl6_BTkznxlgaezEP9kP8z0WT5a_hl8MMF12jZRGZ4' });
+                        const token = await getToken(messaging, { vapidKey: 'BPxGe-PhrQrXYah0TOYjmrahIUAoh5Sp8KdKWs5JqY1Yh_Jw_KlloOeOOkEzIwrj8jpAq6S6UZooXupZcRifGqY' });
                         console.log('Token FCM uzyskany:', token);
                         await setDoc(userSettingsDocRef, { fcmToken: token }, { merge: true });
                         console.log('Token FCM zapisany w Firestore');
