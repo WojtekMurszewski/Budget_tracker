@@ -34,7 +34,8 @@ const requestNotificationPermission = async () => {
     if (permission === 'granted') {
       console.log("Notification permission granted.");
 
-      const currentToken = await getToken(messaging, { vapidKey: 'BPxGe-PhrQrXYah0TOYjmrahIUAoh5Sp8KdKWs5JqY1Yh_Jw_KlloOeOOkEzIwrj8jpAq6S6UZooXupZcRifGqY' });
+      const registration = await navigator.serviceWorker.register('/Project-PSM/firebase-messaging-sw.js');
+      const currentToken = await getToken(messaging, { vapidKey: 'BPxGe-PhrQrXYah0TOYjmrahIUAoh5Sp8KdKWs5JqY1Yh_Jw_KlloOeOOkEzIwrj8jpAq6S6UZooXupZcRifGqY', serviceWorkerRegistration: registration });
       if (currentToken) {
         console.log("FCM Token:", currentToken);
         saveFcmToken(currentToken); // Save the token to Firestore
@@ -48,6 +49,7 @@ const requestNotificationPermission = async () => {
     console.error("Unable to get permission to notify or retrieve token.", err);
   }
 };
+
 
 // Function to save FCM token to Firestore
 const saveFcmToken = async (token) => {
