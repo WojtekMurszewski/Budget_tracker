@@ -17,6 +17,7 @@
   
 <style scoped>
     footer {
+        display: flex;
         position: fixed;
         bottom: 0;
         left: 0;
@@ -27,8 +28,10 @@
         text-align: center;
     }
     footer a {
+        flex: 1;
         color: white;
         margin: 0 10px;
+        font-size: 14px;
     }
 </style>
   

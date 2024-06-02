@@ -6,6 +6,12 @@ import HeaderCash from './components/HeaderCash.vue';
 import FooterMenu from './components/FooterMenu.vue';
 import './registerServiceWorker';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
+import { EventEmitter } from 'events';
+
+const emitter = new EventEmitter();
+emitter.setMaxListeners(20);  // Ustaw maksymalną liczbę nasłuchiwaczy na 20
+
+createApp(App).use(router).mount('#app');
 
 // Funkcja obsługująca logowanie i rejestrację
 window.handleSignInSignUp = async (email, password) => {

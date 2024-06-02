@@ -177,6 +177,10 @@ export default defineComponent({
                 }
             });
 
+            // Sortowanie transakcji według daty od najnowszej do najstarszej
+            income.sort((a, b) => new Date(b.date) - new Date(a.date));
+            expenses.sort((a, b) => new Date(b.date) - new Date(a.date));
+
             incomeTransactions.value = income;
             expenseTransactions.value = expenses;
 
