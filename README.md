@@ -13,3 +13,8 @@ Receipt Upload: Upload photos of receipts to keep a digital record of your purch
 Category Pie Chart: Visualize your spending habits with a pie chart that displays the percentage of your expenses by category.
 
 Notifications: Receive timely notifications to stay updated on your budget status and important financial reminders.
+
+## Screenshots
+![image](https://github.com/WojtekMurszewski/Budget_tracker/assets/92741257/dda93912-cf53-4135-b0a5-20ab03bcf77a)
+![image](https://github.com/WojtekMurszewski/Budget_tracker/assets/92741257/c8b83788-1901-4393-8e7a-a1013a964e7b)
+
