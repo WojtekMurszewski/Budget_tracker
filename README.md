@@ -25,9 +25,9 @@ https://joanna-maslankiewicz.github.io/Project-PSM/#/
 
 
 ## Authors 
-[WojtekMurszewski](https://www.github.com/WojciechMurszewski)
-[JoannaMaslankiewicz](https://github.com/Joanna-Maslankiewicz)
-[KacperHampel](https://github.com/s219079)
+- [WojtekMurszewski](https://www.github.com/WojciechMurszewski)
+- [JoannaMaslankiewicz](https://github.com/Joanna-Maslankiewicz)
+- [KacperHampel](https://github.com/s219079)
 
 
 
