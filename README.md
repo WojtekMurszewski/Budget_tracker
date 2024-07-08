@@ -17,4 +17,8 @@ Notifications: Receive timely notifications to stay updated on your budget statu
 ## Screenshots
 ![image](https://github.com/WojtekMurszewski/Budget_tracker/assets/92741257/dda93912-cf53-4135-b0a5-20ab03bcf77a)
 ![image](https://github.com/WojtekMurszewski/Budget_tracker/assets/92741257/c8b83788-1901-4393-8e7a-a1013a964e7b)
+![image](https://github.com/WojtekMurszewski/Budget_tracker/assets/92741257/da0bb59b-46dd-40ab-80dd-6f01bfa87ac2)
+![image](https://github.com/WojtekMurszewski/Budget_tracker/assets/92741257/4fdec480-20d6-49cb-bf5b-1f47fbd51eea)
+
+
 
