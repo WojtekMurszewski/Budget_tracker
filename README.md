@@ -24,4 +24,10 @@ https://joanna-maslankiewicz.github.io/Project-PSM/#/
 ![image](https://github.com/WojtekMurszewski/Budget_tracker/assets/92741257/4fdec480-20d6-49cb-bf5b-1f47fbd51eea)
 
 
+## Authors 
+[WojtekMurszewski](https://www.github.com/WojciechMurszewski)
+[JoannaMaslankiewicz](https://github.com/Joanna-Maslankiewicz)
+[KacperHampel](https://github.com/s219079)
+
+
 
